@@ -3,344 +3,814 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eagerz — Developer</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Eagerz — Minecraft Developer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Inter:wght@300;400;600;700;900&display=swap');
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --white: #ffffff;
+            --off-white: #f0f0f0;
+            --gray: #888;
+            --dark-gray: #222;
+            --black: #000000;
+            --accent: #fff;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--black);
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* === NOISE OVERLAY === */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* === SCROLLBAR === */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--black); }
+        ::-webkit-scrollbar-thumb { background: var(--white); }
+
+        /* === NAV === */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            mix-blend-mode: difference;
+        }
+
+        .nav-logo {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: -1px;
+            text-transform: uppercase;
+        }
+
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            position: relative;
+            transition: opacity 0.3s;
+        }
+        .nav-links a:hover { opacity: 0.6; }
+        .nav-links a::after {
+            content: '//';
+            margin-left: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 400;
+            opacity: 0.3;
+        }
+
+        /* === HERO === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6rem 3rem 3rem;
+            position: relative;
+        }
+
+        .hero-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .hero-name {
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -6px;
+            text-transform: uppercase;
+        }
+
+        .hero-name .outline {
+            -webkit-text-stroke: 2px var(--white);
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            color: var(--gray);
+            font-weight: 300;
+            max-width: 500px;
+            line-height: 1.7;
+        }
+
+        .hero-subtitle strong {
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            border: 1px solid var(--white);
+            padding: 0.35rem 1rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-top: 2.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 3rem;
+            left: 3rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .hero-scroll .line {
+            width: 60px;
+            height: 1px;
+            background: var(--gray);
+        }
+
+        /* === SECTION HEADERS === */
+        .section {
+            padding: 6rem 3rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--gray);
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.15);
+            align-self: center;
+        }
+
+        /* === SKILLS === */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .skill-card {
+            background: var(--black);
+            padding: 3rem 2.5rem;
+            position: relative;
+            transition: background 0.4s;
+        }
+
+        .skill-card:hover {
+            background: var(--dark-gray);
+        }
+
+        .skill-icon {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .skill-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .skill-desc {
+            color: var(--gray);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .skill-tag {
+            display: inline-block;
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--gray);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 0.25rem 0.75rem;
+        }
+
+        /* === SERVERS === */
+        .servers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .server-card {
+            border: 1px solid rgba(255,255,255,0.12);
+            padding: 0;
+            position: relative;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .server-card:hover {
+            border-color: var(--white);
+        }
+
+        .server-card:hover .server-name {
+            padding-left: 1.5rem;
+        }
+
+        .server-top {
+            padding: 1.5rem 1.75rem 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .server-name {
+            font-weight: 800;
+            font-size: 1.15rem;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            transition: padding-left 0.3s;
+        }
+
+        .server-index {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--gray);
+            letter-spacing: 1px;
+        }
+
+        .server-roles {
+            padding: 1rem 1.75rem 1.75rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .role-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0.4rem 0.85rem;
+            border: 1px solid rgba(255,255,255,0.25);
+            color: var(--white);
+            background: transparent;
+        }
+
+        .server-card.owned {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .server-card.owned .role-badge {
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .server-card.managed {
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .server-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+            margin: 0 1.75rem;
+        }
+
+        /* === MANAGEMENT HIGHLIGHT === */
+        .mgmt-section {
+            padding: 4rem 3rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .mgmt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0;
+        }
+
+        .mgmt-item {
+            padding: 2.5rem 2rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            position: relative;
+        }
+
+        .mgmt-item::before {
+            content: '▸';
+            position: absolute;
+            top: 2.5rem;
+            left: 0.75rem;
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .mgmt-server {
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.3rem;
+        }
+
+        .mgmt-role {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* === STATS === */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1px;
+            background: rgba(255,255,255,0.08);
+            margin-top: 3rem;
+        }
+
+        .stat {
+            background: var(--black);
+            padding: 2.5rem 2rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gray);
+            margin-top: 0.5rem;
+        }
+
+        /* === FOOTER === */
+        footer {
+            padding: 4rem 3rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--gray);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .footer-right {
+            font-size: 0.65rem;
+            color: var(--gray);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .nav-links { gap: 1rem; }
+            .nav-links a { font-size: 0.65rem; letter-spacing: 1px; }
+            .hero { padding: 6rem 1.5rem 3rem; }
+            .hero-name { letter-spacing: -3px; }
+            .section { padding: 4rem 1.5rem; }
+            .servers-grid { grid-template-columns: 1fr; }
+            footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        /* === REVEAL ANIMATION === */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                        transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-                <span class="logo-bracket">&lt;</span>
-                Eagerz
-                <span class="logo-bracket">/&gt;</span>
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#reviews">Reviews</a></li>
-                <li><a href="#contact" class="nav-btn">Contact</a></li>
-            </ul>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">EGRZ//</div>
+        <div class="nav-links">
+            <a href="#skills">Skills</a>
+            <a href="#experience">Experience</a>
+            <a href="#management">Management</a>
         </div>
     </nav>
 
-    <!-- HERO SECTION -->
-    <section class="hero" id="home">
-        <div class="hero-bg-effects">
-            <div class="gradient-orb orb-1"></div>
-            <div class="gradient-orb orb-2"></div>
-            <div class="grid-overlay"></div>
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-label">// Minecraft Developer & Server Manager</div>
+        <h1 class="hero-name">
+            <span class="outline">EAGER</span>Z
+        </h1>
+        <p class="hero-subtitle">
+            Building and managing Minecraft servers across <strong>14+ networks</strong>. 
+            Specializing in <strong>Java</strong>, <strong>Skript</strong>, and <strong>web development</strong> 
+            with a focus on content systems, community infrastructure, and staff operations.
+        </p>
+        <div class="hero-tag">Available for work</div>
+        <div class="hero-scroll">
+            <span class="line"></span>
+            Scroll to explore
         </div>
-        <div class="hero-content">
-            <div class="hero-badge">✦ Available for work</div>
-            <h1>Hi, I'm <span class="highlight">Eagerz</span></h1>
-            <p class="hero-subtitle">Minecraft Developer & Web Designer</p>
-            <p class="hero-desc">I build custom plugins, skripts, websites, and Tebex stores for Minecraft servers.</p>
-            <div class="hero-buttons">
-                <a href="#services" class="btn btn-primary">View Services</a>
-                <a href="https://discord.gg/YOURLINK" class="btn btn-secondary" target="_blank">
-                    <i class="fab fa-discord"></i> Discord
-                </a>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="section" id="skills">
+        <div class="section-header reveal">
+            <span class="section-number">01//</span>
+            <h2 class="section-title">What I Do</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="skills-grid reveal">
+            <div class="skill-card">
+                <span class="skill-icon">{ }</span>
+                <div class="skill-name">Java Development</div>
+                <div class="skill-desc">
+                    Custom plugin development, Spigot/Paper API, complex game mechanics, 
+                    and performance-optimized server-side systems.
+                </div>
+                <span class="skill-tag">Spigot · Paper · Plugin API</span>
             </div>
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number">20+</span>
-                    <span class="stat-label">Projects</span>
+            <div class="skill-card">
+                <span class="skill-icon">>_</span>
+                <div class="skill-name">Skript Development</div>
+                <div class="skill-desc">
+                    Rapid server logic, custom commands, event systems, 
+                    and gameplay features built with clean, maintainable Skript code.
                 </div>
-                <div class="stat">
-                    <span class="stat-number">5+</span>
-                    <span class="stat-label">Clients</span>
+                <span class="skill-tag">Skript · SkQuery · TuSKe</span>
+            </div>
+            <div class="skill-card">
+                <span class="skill-icon">&lt;/&gt;</span>
+                <div class="skill-name">Web Development</div>
+                <div class="skill-desc">
+                    Server websites, store fronts, landing pages, and web-based 
+                    tools for community management and player engagement.
                 </div>
-                <div class="stat">
-                    <span class="stat-number">3</span>
-                    <span class="stat-label">Reviews</span>
+                <span class="skill-tag">HTML · CSS · JS · Backend</span>
+            </div>
+            <div class="skill-card">
+                <span class="skill-icon">@</span>
+                <div class="skill-name">Discord Bot Development</div>
+                <div class="skill-desc">
+                    Custom Discord bots for moderation, ticket systems, applications, 
+                    automation, and community management — built to integrate 
+                    directly with server workflows.
                 </div>
+                <span class="skill-tag">Discord.js · JDA · API</span>
+            </div>
+        </div>
+
+        <div class="stats-row reveal">
+            <div class="stat">
+                <div class="stat-number">14+</div>
+                <div class="stat-label">Servers</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">6</div>
+                <div class="stat-label">Owner / Co-Owner Roles</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">8+</div>
+                <div class="stat-label">Manager Positions</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Disciplines</div>
             </div>
         </div>
     </section>
 
-    <!-- ABOUT SECTION -->
-    <section class="section" id="about">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">About Me</span>
-                <h2>Who am I?</h2>
-            </div>
-            <div class="about-grid">
-                <div class="about-text">
-                    <p>I'm Eagerz — a passionate Minecraft developer with experience in Java plugin development, Skript, Tebex store design, and web development.</p>
-                    <p>I focus on delivering clean, optimized, and professional work for servers of all sizes. Whether you need a simple skript or a full custom plugin, I've got you covered.</p>
-                    <div class="tech-stack">
-                        <h3>Tech Stack</h3>
-                        <div class="tech-tags">
-                            <span class="tech-tag">Java</span>
-                            <span class="tech-tag">Skript</span>
-                            <span class="tech-tag">HTML/CSS</span>
-                            <span class="tech-tag">JavaScript</span>
-                            <span class="tech-tag">React</span>
-                            <span class="tech-tag">Node.js</span>
-                            <span class="tech-tag">Tebex</span>
-                            <span class="tech-tag">Spigot API</span>
-                            <span class="tech-tag">Paper API</span>
-                            <span class="tech-tag">MySQL</span>
-                            <span class="tech-tag">Git</span>
-                        </div>
-                    </div>
+    <!-- EXPERIENCE -->
+    <section class="section" id="experience">
+        <div class="section-header reveal">
+            <span class="section-number">02//</span>
+            <h2 class="section-title">Past Experience</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="servers-grid">
+
+            <!-- Owned / Co-Owned -->
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">SynapticSMP</div>
+                    <div class="server-index">001</div>
                 </div>
-                <div class="about-card">
-                    <div class="about-card-inner">
-                        <div class="about-icon">👨‍💻</div>
-                        <h3>Eagerz</h3>
-                        <p>Minecraft Developer</p>
-                        <div class="about-socials">
-                            <a href="https://discord.gg/YOURLINK"><i class="fab fa-discord"></i></a>
-                            <a href="https://github.com/Eagerz"><i class="fab fa-github"></i></a>
-                            <a href="https://twitter.com/Eagerz"><i class="fab fa-twitter"></i></a>
-                            <a href="https://builtbybit.com/members/Eagerz"><i class="fas fa-shopping-cart"></i></a>
-                        </div>
-                    </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Owner</span>
+                    <span class="role-badge">Head Developer</span>
+                    <span class="role-badge">Manager</span>
                 </div>
             </div>
+
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">EvergreenSMP</div>
+                    <div class="server-index">002</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Owner</span>
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">MaceSMP</div>
+                    <div class="server-index">003</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Owner</span>
+                    <span class="role-badge">Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">ApexSMP</div>
+                    <div class="server-index">004</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Owner</span>
+                    <span class="role-badge">Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">OnelifeSMP</div>
+                    <div class="server-index">005</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Co-Owner</span>
+                </div>
+            </div>
+
+            <div class="server-card owned reveal">
+                <div class="server-top">
+                    <div class="server-name">EclipseSMP</div>
+                    <div class="server-index">006</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Co-Owner</span>
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <!-- Management / Dev -->
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">DuckyMC</div>
+                    <div class="server-index">007</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Content Manager</span>
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">Twisted SMP</div>
+                    <div class="server-index">008</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Manager</span>
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">ChromaticSMP</div>
+                    <div class="server-index">009</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Application Manager</span>
+                    <span class="role-badge">Content Manager</span>
+                    <span class="role-badge">Event Manager</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">StaffSMP</div>
+                    <div class="server-index">010</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Staff Manager</span>
+                    <span class="role-badge">Application Manager</span>
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">HelixSMP</div>
+                    <div class="server-index">011</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Head Developer</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">DriftMC</div>
+                    <div class="server-index">012</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Manager</span>
+                </div>
+            </div>
+
+            <div class="server-card managed reveal">
+                <div class="server-top">
+                    <div class="server-name">FireMC</div>
+                    <div class="server-index">013</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Ticket Manager</span>
+                </div>
+            </div>
+
+            <div class="server-card reveal">
+                <div class="server-top">
+                    <div class="server-name">ApexSMP</div>
+                    <div class="server-index">014</div>
+                </div>
+                <div class="server-divider"></div>
+                <div class="server-roles">
+                    <span class="role-badge">Admin</span>
+                </div>
+            </div>
+
         </div>
     </section>
 
-    <!-- SERVICES SECTION -->
-    <section class="section section-dark" id="services">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Services</span>
-                <h2>What I Offer</h2>
-            </div>
-            <div class="services-grid">
-
-                <div class="service-card">
-                    <div class="service-icon">📝</div>
-                    <h3>Skript Development</h3>
-                    <p>Custom skripts tailored to your server's needs. Clean, optimized, and configurable.</p>
-                    <div class="service-pricing">
-                        <span class="price">$3 - $15</span>
-                        <span class="delivery">1-7 days</span>
-                    </div>
-                </div>
-
-                <div class="service-card featured">
-                    <div class="featured-badge">Popular</div>
-                    <div class="service-icon">⚙️</div>
-                    <h3>Java Plugins</h3>
-                    <p>Custom Spigot/Paper plugins built from scratch. Small to large scale projects.</p>
-                    <div class="service-pricing">
-                        <span class="price">$5 - $30</span>
-                        <span class="delivery">1-2 weeks</span>
-                    </div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🛍️</div>
-                    <h3>Tebex Setup</h3>
-                    <p>Professional webstore setup with custom styling, packages, and branding.</p>
-                    <div class="service-pricing">
-                        <span class="price">$10 - $40</span>
-                        <span class="delivery">2-7 days</span>
-                    </div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🌐</div>
-                    <h3>Web Design</h3>
-                    <p>Modern, responsive websites for your server, brand, or personal portfolio.</p>
-                    <div class="service-pricing">
-                        <span class="price">$80 - $200</span>
-                        <span class="delivery">~2 weeks</span>
-                    </div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">👨‍💻</div>
-                    <h3>Dedicated Developer</h3>
-                    <p>Hire me for ongoing development. Weekly or monthly plans available.</p>
-                    <div class="service-pricing">
-                        <span class="price">Custom</span>
-                        <span class="delivery">Ongoing</span>
-                    </div>
-                </div>
-
-                <div class="service-card">
-                    <div class="service-icon">🔧</div>
-                    <h3>Server Configs</h3>
-                    <p>Professional configuration for any plugin. Optimized and clean.</p>
-                    <div class="service-pricing">
-                        <span class="price">$5 - $15</span>
-                        <span class="delivery">1-3 days</span>
-                    </div>
-                </div>
-
-            </div>
+    <!-- MANAGEMENT HIGHLIGHT -->
+    <section class="mgmt-section" id="management">
+        <div class="section-header reveal">
+            <span class="section-number">03//</span>
+            <h2 class="section-title">Server Management</h2>
+            <div class="section-line"></div>
         </div>
-    </section>
-
-    <!-- PORTFOLIO SECTION -->
-    <section class="section" id="portfolio">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Portfolio</span>
-                <h2>My Work</h2>
+        <p style="color: var(--gray); font-weight: 300; line-height: 1.8; max-width: 600px; margin-bottom: 3rem;" class="reveal">
+            Beyond development, I've owned and managed multiple Minecraft networks — handling staffing, 
+            content pipelines, community operations, application systems, and event coordination.
+        </p>
+        <div class="mgmt-grid reveal">
+            <div class="mgmt-item">
+                <div class="mgmt-server">SynapticSMP</div>
+                <div class="mgmt-role">Owner · Manager · Head Developer</div>
             </div>
-            <div class="portfolio-grid">
-
-                <div class="portfolio-card">
-                    <div class="portfolio-image">
-                        <div class="portfolio-placeholder">🔌</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Twisted SMP</h3>
-                        <p>Made custom abilites and weapons.</p>
-                        <div class="portfolio-tags">
-                            <span>Java</span>
-                            <span>Spigot</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="portfolio-card">
-                    <div class="portfolio-image">
-                        <div class="portfolio-placeholder">🌐</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>HelixSMP</h3>
-                        <p>Made different items called Helixs which grant abilites also made weapons called mythics.</p>
-                        <div class="portfolio-tags">
-                            <span>Java</span>
-                            <span>Paper</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="portfolio-card">
-                    <div class="portfolio-image">
-                        <div class="portfolio-placeholder">🛍️</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>Crown Events</h3>
-                        <p>Event Skript featured a craftable crown and sword, had grace period and world border.</p>
-                        <div class="portfolio-tags">
-                            <span>Skript</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="portfolio-card">
-                    <div class="portfolio-image">
-                        <div class="portfolio-placeholder">https://imgur.com/3buIsAk</div>
-                    </div>
-                    <div class="portfolio-info">
-                        <h3>ERTPs</h3>
-                        <p>A rtp plugin that could teleport to all 3 dimensions, had settings, config for staff and interactive features.</p>
-                        <div class="portfolio-tags">
-                            <span>Plugin</span>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="mgmt-item">
+                <div class="mgmt-server">EvergreenSMP</div>
+                <div class="mgmt-role">Owner · Head Developer</div>
             </div>
-        </div>
-    </section>
-
-    <!-- REVIEWS SECTION -->
-    <section class="section section-dark" id="reviews">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Reviews</span>
-                <h2>What Clients Say</h2>
+            <div class="mgmt-item">
+                <div class="mgmt-server">MaceSMP</div>
+                <div class="mgmt-role">Owner · Developer</div>
             </div>
-            <div class="reviews-grid">
-
-                <div class="review-card">
-                    <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                    <p>"Amazing work! Delivered fast and exactly what I needed. Will definitely order again."</p>
-                    <div class="review-author">
-                        <div class="review-avatar">👤</div>
-                        <div>
-                            <h4>Comet__</h4>
-                            <span>HelixSMP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                    <p>"Best developer I've worked with. Clean code, great communication, and fair prices."</p>
-                    <div class="review-author">
-                        <div class="review-avatar">👤</div>
-                        <div>
-                            <h4>Crimy</h4>
-                            <span>HelixSMP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="review-card">
-                    <div class="review-stars">⭐⭐⭐⭐⭐</div>
-                    <p>"Made a custom plugin for the server. Couldn't be happier with the results."</p>
-                    <div class="review-author">
-                        <div class="review-avatar">👤</div>
-                        <div>
-                            <h4>Bluetap</h4>
-                            <span>TwistedSMP</span>
-                        </div>
-                    </div>
-                </div>
-
+            <div class="mgmt-item">
+                <div class="mgmt-server">ApexSMP</div>
+                <div class="mgmt-role">Owner · Developer</div>
             </div>
-        </div>
-    </section>
-
-    <!-- CONTACT / CTA SECTION -->
-    <section class="section" id="contact">
-        <div class="container">
-            <div class="cta-box">
-                <h2>Ready to work together?</h2>
-                <p>Join my Discord server to place an order or ask any questions.</p>
-                <div class="cta-buttons">
-                    <a href="https://discord.gg/Sxxzh6thDd" class="btn btn-primary" target="_blank">
-                        <i class="fab fa-discord"></i> Join Discord
-                    </a>
-                    <a href="https://builtbybit.com/members/Eagerz" class="btn btn-secondary" target="_blank">
-                        <i class="fas fa-store"></i> BuiltByBit
-                    </a>
-                </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">DuckyMC</div>
+                <div class="mgmt-role">Content Manager · Head Developer</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">Twisted SMP</div>
+                <div class="mgmt-role">Manager · Head Developer</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">DriftMC</div>
+                <div class="mgmt-role">Manager</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">OnelifeSMP</div>
+                <div class="mgmt-role">Co-Owner</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">EclipseSMP</div>
+                <div class="mgmt-role">Co-Owner · Head Developer</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">ChromaticSMP</div>
+                <div class="mgmt-role">Content · Events · Applications</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">StaffSMP</div>
+                <div class="mgmt-role">Staff Manager · Head Developer</div>
+            </div>
+            <div class="mgmt-item">
+                <div class="mgmt-server">FireMC</div>
+                <div class="mgmt-role">Ticket Manager</div>
             </div>
         </div>
     </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <span class="logo-bracket">&lt;</span>
-                    Eagerz
-                    <span class="logo-bracket">/&gt;</span>
-                </div>
-                <div class="footer-socials">
-                    <a href="https://discord.gg/Sxxzh6thDd"><i class="fab fa-discord"></i></a>
-                    <a href="https://github.com/Eagerz"><i class="fab fa-github"></i></a>
-                    <a href="https://youtube.com/Eagerz"><i class="fab fa-twitter"></i></a>
-                </div>
-                <p class="footer-copy">© 2026 Eagerz. All rights reserved.</p>
-            </div>
-        </div>
+    <footer>
+        <div class="footer-left">Eagerz © 2026</div>
+        <div class="footer-right">Java · Skript · Web · Management</div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- SCROLL REVEAL -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+
 </body>
 </html>
